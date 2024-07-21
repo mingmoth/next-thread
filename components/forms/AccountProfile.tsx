@@ -3,7 +3,7 @@
 import * as z from "zod"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { ChangeEvent } from "react"
+import { ChangeEvent, useState } from "react"
 // components
 import { Button } from "@/components/ui/button"
 import {
@@ -45,8 +45,26 @@ export default function AccountProfile({ user, btnTitle }: Props) {
     }
   })
 
-  function handleImage(e: ChangeEvent, fieldChange: (value: string) => void) {
+  const [file, setFile] = useState<File[]>([])
+
+  function handleImage(e: ChangeEvent<HTMLInputElement>, fieldChange: (value: string) => void) {
     e.preventDefault()
+
+    if(e.target.files && e.target?.files?.length > 0) {
+      const file = e.target.files[0]
+      setFile(Array.from(e.target.files))
+
+      if(!file.type.includes('image')) return
+
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const imageDataUrl = e.target?.result?.toString() || ''
+        if(imageDataUrl) {
+          fieldChange(imageDataUrl)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
   function onSubmit(values: z.infer<typeof UserValidation>) {
