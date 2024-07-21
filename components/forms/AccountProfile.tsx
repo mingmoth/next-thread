@@ -20,6 +20,8 @@ import { Textarea } from "../ui/textarea"
 import Image from "next/image"
 // libs
 import { UserValidation } from '@/lib/validations/user'
+import { useUploadThing } from '@/lib/uploadthing'
+import { isBase64Image } from "@/lib/utils"
 
 
 interface Props {
@@ -67,10 +69,23 @@ export default function AccountProfile({ user, btnTitle }: Props) {
     }
   }
 
-  function onSubmit(values: z.infer<typeof UserValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const { startUpload } = useUploadThing("media")
+
+  async function onSubmit(values: z.infer<typeof UserValidation>) {
+    const blob = values.profile_photo
+    if(!blob) return
+
+    const hasImageChanged = isBase64Image(blob)
+    if(hasImageChanged) {
+      const uploadResult = await startUpload(file)
+
+      if(uploadResult && uploadResult[0].url) {
+        values.profile_photo = uploadResult[0].url
+      }
+    }
+
     console.log(values)
+    // TODO: Update user profile
   }
 
   return (
