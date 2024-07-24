@@ -4,6 +4,8 @@ import * as z from "zod"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { ChangeEvent, useState } from "react"
+
+import { usePathname, useRouter } from "next/navigation"
 // components
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +24,7 @@ import Image from "next/image"
 import { UserValidation } from '@/lib/validations/user'
 import { useUploadThing } from '@/lib/uploadthing'
 import { isBase64Image } from "@/lib/utils"
+import { updateUser } from "@/lib/actions/user.actions"
 
 
 interface Props {
@@ -70,6 +73,8 @@ export default function AccountProfile({ user, btnTitle }: Props) {
   }
 
   const { startUpload } = useUploadThing("media")
+  const router = useRouter()
+  const pathname = usePathname()
 
   async function onSubmit(values: z.infer<typeof UserValidation>) {
     const blob = values.profile_photo
@@ -84,8 +89,22 @@ export default function AccountProfile({ user, btnTitle }: Props) {
       }
     }
 
-    console.log(values)
+    // console.log(values)
     // TODO: Update user profile
+    await updateUser({
+      userId: user.id,
+      username: values.username,
+      name: values.name,
+      bio: values.bio || '',
+      image: values.profile_photo || '',
+      path: pathname,
+    })
+
+    if(pathname === '/profile/edit') {
+      router.back()
+    } else {
+      router.push('/')
+    }
   }
 
   return (
