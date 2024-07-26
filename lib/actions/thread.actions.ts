@@ -40,3 +40,45 @@ export async function createThread({
     throw new Error(`Failed to create thread: ${error}`)
   }
 }
+
+export async function fetchThreads({
+  page = 1,
+  total = 20,
+}) {
+  try {
+    connectToDB()
+
+    // Calculate the number of threads to skip
+    const skipAmount = (page - 1) * total
+
+    // Fetch the threads that has no parents (top level threads)
+    const threadsQuery = Thread
+      .find({ parentId: { $in: [null, undefined]} })
+      .sort({ createdAt: 'desc' })
+      .skip(skipAmount)
+      .limit(total)
+      .populate({ path: 'author', model: User })
+      .populate({
+        path: 'children',
+        populate: {
+          path: 'author',
+          model: User,
+          select: "_id name parentId image",
+        }
+      })
+
+      const totalThreadsCount = await Thread.countDocuments({
+        parentId: { $in: [null, undefined]}
+      })
+
+      const threads = await threadsQuery.exec()
+      const hasNext = totalThreadsCount > skipAmount + threads.length
+
+      return {
+        threads,
+        hasNext,
+      }
+  } catch (error) {
+    throw new Error(`Failed to fetch threads: ${error}`)
+  }
+}
