@@ -59,6 +59,7 @@ export default async function Home() {
                 content={thread.text}
                 createdAt={thread.createdAt}
                 currentUserId="user1"
+                isComment={thread.children?.length > 0}
                 parentId={thread.parentId}
               />
             ))
