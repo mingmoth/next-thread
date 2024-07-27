@@ -53,7 +53,7 @@ export async function fetchThreads({
 
     // Fetch the threads that has no parents (top level threads)
     const threadsQuery = Thread
-      .find({ parentId: { $in: [null, undefined]} })
+      .find({ parentId: { $in: [null, undefined] } })
       .sort({ createdAt: 'desc' })
       .skip(skipAmount)
       .limit(total)
@@ -67,17 +67,17 @@ export async function fetchThreads({
         }
       })
 
-      const totalThreadsCount = await Thread.countDocuments({
-        parentId: { $in: [null, undefined]}
-      })
+    const totalThreadsCount = await Thread.countDocuments({
+      parentId: { $in: [null, undefined] }
+    })
 
-      const threads = await threadsQuery.exec()
-      const hasNext = totalThreadsCount > skipAmount + threads.length
+    const threads = await threadsQuery.exec()
+    const hasNext = totalThreadsCount > skipAmount + threads.length
 
-      return {
-        threads,
-        hasNext,
-      }
+    return {
+      threads,
+      hasNext,
+    }
   } catch (error) {
     throw new Error(`Failed to fetch threads: ${error}`)
   }
@@ -97,7 +97,8 @@ export async function fetchThreadById(id: string) {
         path: 'children',
         populate: [
           { path: 'author', model: User, select: "_id id name parentId image" },
-          { path: 'children',
+          {
+            path: 'children',
             model: Thread,
             populate: {
               path: 'author',
@@ -108,10 +109,49 @@ export async function fetchThreadById(id: string) {
         ]
       })
       .exec()
-      // TODO: populate community
+    // TODO: populate community
 
-      return thread
+    return thread
   } catch (error) {
     throw new Error(`Failed to fetch thread by ${id}: ${error}`)
+  }
+}
+
+export async function addCommentToThread(
+  threadId: string,
+  commentText: string,
+  userId: string,
+  path: string
+) {
+  connectToDB();
+
+  try {
+    // Find the original thread by its ID
+    const originalThread = await Thread.findById(threadId);
+
+    if (!originalThread) {
+      throw new Error("Thread not found");
+    }
+
+    // Create the new comment thread
+    const commentThread = new Thread({
+      text: commentText,
+      author: userId,
+      parentId: threadId, // Set the parentId to the original thread's ID
+    });
+
+    // Save the comment thread to the database
+    const savedCommentThread = await commentThread.save();
+
+    // Add the comment thread's ID to the original thread's children array
+    originalThread.children.push(savedCommentThread._id);
+
+    // Save the updated original thread to the database
+    await originalThread.save();
+
+    revalidatePath(path);
+  } catch (err) {
+    console.error("Error while adding comment:", err);
+    throw new Error("Unable to add comment");
   }
 }
