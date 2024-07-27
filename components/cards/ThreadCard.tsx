@@ -16,7 +16,7 @@ interface Community {
 interface Comment {
   id: string
   text: string
-  author: string
+  author: Author
   parentId: string
   createdAt: Date,
 }
@@ -24,7 +24,7 @@ interface Comment {
 interface ThreadProps {
   id: string,
   author: Author,
-  comments: Comment[],
+  comments: Comment[] | [],
   community: Community | null,
   content: string,
   createdAt: Date,
