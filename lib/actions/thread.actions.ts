@@ -82,3 +82,36 @@ export async function fetchThreads({
     throw new Error(`Failed to fetch threads: ${error}`)
   }
 }
+
+export async function fetchThreadById(id: string) {
+  try {
+    connectToDB()
+
+    const thread = await Thread.findById(id)
+      .populate({
+        path: 'author',
+        model: User,
+        select: "_id id name image",
+      })
+      .populate({
+        path: 'children',
+        populate: [
+          { path: 'author', model: User, select: "_id id name parentId image" },
+          { path: 'children',
+            model: Thread,
+            populate: {
+              path: 'author',
+              model: User,
+              select: "_id id name parentId image",
+            }
+          },
+        ]
+      })
+      .exec()
+      // TODO: populate community
+
+      return thread
+  } catch (error) {
+    throw new Error(`Failed to fetch thread by ${id}: ${error}`)
+  }
+}
