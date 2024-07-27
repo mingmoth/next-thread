@@ -1,13 +1,19 @@
 import { fetchThreads } from "@/lib/actions/thread.actions";
+// components
+import ThreadCard from "@/components/cards/ThreadCard";
 
 export default async function Home() {
   const result = {
     threads: [
       {
         id: '1',
-        text: 'Thread 1',
+        text: 'Next-Thread First Post in the Community',
         parentId: 'parent1',
-        author: 'user1',
+        author: {
+          id: 'user1',
+          name: 'User 1',
+          image: 'https://i.pravatar.cc/300',
+        },
         createdAt: new Date(),
         children: [
           {
@@ -25,15 +31,17 @@ export default async function Home() {
             createdAt: new Date(),
           },
         ],
-        community: 'community1',
+        community: null,
       },
     ],
     hasNext: false
   }
+
   // const result = await fetchThreads({
   //   page: 1,
   //   total: 30,
   // })
+
   return (
     <>
       <h1 className="head-text text-left">Home</h1>
@@ -42,7 +50,7 @@ export default async function Home() {
           ? <p className="no-result">No Threads Found</p>
           : <>
             { result.threads?.map((thread) => (
-              <p
+              <ThreadCard
                 key={thread.id}
                 id={thread.id}
                 author={thread.author}
@@ -50,10 +58,9 @@ export default async function Home() {
                 community={thread.community}
                 content={thread.text}
                 createdAt={thread.createdAt}
+                currentUserId="user1"
                 parentId={thread.parentId}
-              >
-                Threads
-              </p>
+              />
             ))
             }</>
         }
