@@ -5,9 +5,10 @@ import { fetchUser } from "@/lib/actions/user.actions"
 // constants
 import { profileTabs } from "@/constants"
 // components
-import ProfileHeader from "@/components/shared/ProfileHeader"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image"
+import ProfileHeader from "@/components/shared/ProfileHeader"
+import ThreadTab from "@/components/shared/ThreadTab"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function Profile({ params }: { params: { id: string } }) {
   // const userInfo = await fetchUser(params.id)
@@ -71,7 +72,11 @@ export default async function Profile({ params }: { params: { id: string } }) {
               value={tab.value}
               className='w-full text-light-1'
             >
-              {tab.label}
+              <ThreadTab
+                currentUserId={user.id}
+                accountId={userInfo.id}
+                accountType="User"
+              />
             </TabsContent>
           ))}
         </Tabs>
