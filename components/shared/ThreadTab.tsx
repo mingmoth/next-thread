@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { fetchUserThreads } from "@/lib/actions/user.actions";
 import ThreadCard from "../cards/ThreadCard";
 
 interface ThreadTabProps {
@@ -35,6 +37,9 @@ export default async function ThreadTab({
   accountType,
 }: ThreadTabProps) {
   let result: Result | undefined
+
+  // result = await fetchUserThreads(accountId);
+
   // mock data
   result = {
     name: 'User 1',
@@ -53,6 +58,10 @@ export default async function ThreadTab({
       createdAt: new Date(),
       children: [],
     }],
+  }
+
+  if (!result) {
+    redirect("/");
   }
 
   return (
