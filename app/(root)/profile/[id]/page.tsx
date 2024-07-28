@@ -6,6 +6,8 @@ import { fetchUser } from "@/lib/actions/user.actions"
 import { profileTabs } from "@/constants"
 // components
 import ProfileHeader from "@/components/shared/ProfileHeader"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from "next/image"
 
 export default async function Profile({ params }: { params: { id: string } }) {
   // const userInfo = await fetchUser(params.id)
@@ -25,6 +27,7 @@ export default async function Profile({ params }: { params: { id: string } }) {
     username: 'user1',
     bio: 'User 1 Bio',
     image: 'https://i.pravatar.cc/300',
+    threads: [],
   }
   const user = {
     id: '2',
@@ -44,6 +47,35 @@ export default async function Profile({ params }: { params: { id: string } }) {
         image={userInfo.image}
         bio={userInfo.bio}
       />
+
+      <div className="mt-9">
+        <Tabs defaultValue={profileTabs[0].value}>
+          <TabsList className="tab">
+            {profileTabs.map((tab) => (
+              <TabsTrigger key={tab.label} value={tab.value} className="tab">
+                <Image src={tab.icon} alt={tab.label} width={24} height={24} />
+                <p className='max-sm:hidden'>{tab.label}</p>
+
+                {tab.label === "Threads" && (
+                  <p className='ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2'>
+                    {userInfo.threads.length}
+                  </p>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {profileTabs.map((tab) => (
+            <TabsContent
+              key={`content-${tab.label}`}
+              value={tab.value}
+              className='w-full text-light-1'
+            >
+              {tab.label}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </section>
   )
 }
