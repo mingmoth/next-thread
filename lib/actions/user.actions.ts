@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import User from "../models/user.model"
 import { connectToDB } from "../mongoose"
+import path from "path"
 
 interface Params {
   userId: string,
@@ -19,14 +20,14 @@ export async function fetchUser(userId: string) {
 
     return await User
       .findOne({ id: userId })
-      // .populate({
-      //   path: 'communities',
-      //   model: 'Community',
-      // })
+    // .populate({
+    //   path: 'communities',
+    //   model: 'Community',
+    // })
 
   } catch (error) {
     console.error(error)
-    throw new Error(`Failed to fetch user: ${ error }`)
+    throw new Error(`Failed to fetch user: ${error}`)
   }
 }
 
@@ -53,10 +54,43 @@ export async function updateUser({
       { upsert: true } // update and insert
     )
 
-    if(path === '/profile/edit') {
+    if (path === '/profile/edit') {
       revalidatePath(path)
     }
   } catch (error) {
-    throw new Error(`Failed to update user: ${ error }`)
+    throw new Error(`Failed to update user: ${error}`)
+  }
+}
+
+export async function fetchUserThreads(userId: string) {
+  try {
+    connectToDB()
+
+    // Find all threads authored by the user with the given userId
+    const threads = await User.findOne({ id: userId })
+      .populate({
+        path: 'threads',
+        model: 'Thread',
+        populate: [
+          {
+            path: 'community',
+            model: 'Community',
+            select: '_id id name image',
+          },
+          {
+            path: 'children',
+            model: 'Thread',
+            populate: {
+              path: 'author',
+              model: 'User',
+              select: '_id id name parentId image',
+            }
+          }
+        ]
+      })
+
+    return threads
+  } catch (error) {
+    throw new Error(`Failed to fetch user threads: ${error}`)
   }
 }
