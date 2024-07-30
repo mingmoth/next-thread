@@ -2,9 +2,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Input } from "../ui/input";
 
-
 export default function SearchBar({ routeType }: { routeType: string }) {
-
   const getSearchType = () => {
     switch (routeType) {
       case 'search':
