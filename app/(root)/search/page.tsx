@@ -1,8 +1,17 @@
 "use client"
 
+import { usePathname, useRouter } from "next/navigation";
 import UserCard from "@/components/cards/UserCard";
 import SearchBar from "@/components/shared/SearchBar";
-import { usePathname, useRouter } from "next/navigation";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 interface User {
   id: string,
@@ -13,9 +22,14 @@ interface User {
   onClick?: () => void
 }
 
-export default function Search() {
+export default function Search({
+  searchParams
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
   const router = useRouter()
   const pathname = usePathname()
+  const routeType = pathname.split('/')[1]
 
   const result = {
     users: [
@@ -33,7 +47,9 @@ export default function Search() {
         imgUrl: '',
         personType: 'Community'
       }
-    ]
+    ],
+    totalPage: 5,
+    isNext: true
   }
 
   const onClickUser = (user: User) => {
@@ -41,7 +57,6 @@ export default function Search() {
     router.push(`/${isCommunity ? 'community' : 'profile'}/${user.id}`)
   }
 
-  const routeType = pathname.split('/')[1]
   return (
     <section>
       <h1 className="head-text mb-10">Search</h1>
@@ -60,6 +75,36 @@ export default function Search() {
           />
         ))}
       </div>
+
+      {(result.isNext && result.totalPage > 1) && <Pagination className="text-light-2">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href={`/search?page=${Number(searchParams.page) - 1 > 0 ? Number(searchParams.page) - 1 : 1}`}
+              aria-disabled={!!searchParams.page && Number(searchParams?.page) > 1}
+            />
+          </PaginationItem>
+          {result.totalPage && result.totalPage <= 5 && [...Array(result.totalPage)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                href={`/search?page=${index + 1}`}
+                isActive={Number(searchParams.page) === index + 1}
+              >
+                  {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          {/* <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem> */}
+          <PaginationItem>
+            <PaginationNext
+              href={`/search?page=${Number(searchParams.page) + 1 >= Number(result.totalPage) ? result.totalPage : Number(searchParams.page) + 1}`}
+              aria-disabled={!!searchParams.page && Number(searchParams?.page) >= result.totalPage}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>}
     </section>
   )
 }
