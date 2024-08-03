@@ -21,7 +21,7 @@ export const sidebarLinks: { imgURL: string; route: string; label: string }[] = 
   },
   {
     imgURL: "/assets/community.svg",
-    route: "/communities",
+    route: "/community",
     label: "Communities",
   },
   {

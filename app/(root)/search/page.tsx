@@ -54,7 +54,7 @@ export default function Search({
 
   const onClickUser = (user: User) => {
     const isCommunity = user.personType === 'Community'
-    router.push(`/${isCommunity ? 'communities' : 'profile'}/${user.id}`)
+    router.push(`/${isCommunity ? 'community' : 'profile'}/${user.id}`)
   }
 
   const currentQueryPage = Number(searchParams?.page ?? 1)
