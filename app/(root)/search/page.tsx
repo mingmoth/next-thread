@@ -54,8 +54,10 @@ export default function Search({
 
   const onClickUser = (user: User) => {
     const isCommunity = user.personType === 'Community'
-    router.push(`/${isCommunity ? 'community' : 'profile'}/${user.id}`)
+    router.push(`/${isCommunity ? 'communities' : 'profile'}/${user.id}`)
   }
+
+  const currentQueryPage = Number(searchParams?.page ?? 1)
 
   return (
     <section>
@@ -80,7 +82,7 @@ export default function Search({
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
-              href={`/search?page=${Number(searchParams.page) - 1 > 0 ? Number(searchParams.page) - 1 : 1}`}
+              href={`/search?page=${currentQueryPage - 1 > 0 ? currentQueryPage - 1 : 1}`}
               aria-disabled={!!searchParams.page && Number(searchParams?.page) > 1}
             />
           </PaginationItem>
@@ -88,7 +90,7 @@ export default function Search({
             <PaginationItem key={index}>
               <PaginationLink
                 href={`/search?page=${index + 1}`}
-                isActive={Number(searchParams.page) === index + 1}
+                isActive={currentQueryPage === index + 1}
               >
                   {index + 1}
               </PaginationLink>
@@ -99,8 +101,8 @@ export default function Search({
           </PaginationItem> */}
           <PaginationItem>
             <PaginationNext
-              href={`/search?page=${Number(searchParams.page) + 1 >= Number(result.totalPage) ? result.totalPage : Number(searchParams.page) + 1}`}
-              aria-disabled={!!searchParams.page && Number(searchParams?.page) >= result.totalPage}
+              href={`/search?page=${currentQueryPage + 1 >= Number(result.totalPage) ? result.totalPage : currentQueryPage + 1}`}
+              aria-disabled={!!searchParams.page && currentQueryPage >= result.totalPage}
             />
           </PaginationItem>
         </PaginationContent>
