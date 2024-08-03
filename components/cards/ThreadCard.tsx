@@ -18,7 +18,7 @@ interface Comment {
   text: string
   author: Author
   parentId: string
-  createdAt: Date,
+  createdAt: string,
 }
 
 interface ThreadProps {
@@ -27,7 +27,7 @@ interface ThreadProps {
   comments: Comment[] | [],
   community: Community | null,
   content: string,
-  createdAt: Date,
+  createdAt: string,
   currentUserId: string,
   isComment?: boolean,
   parentId: string | null,
