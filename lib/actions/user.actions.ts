@@ -2,10 +2,10 @@
 
 import { FilterQuery, SortOrder } from "mongoose"
 import { revalidatePath } from "next/cache"
+import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model"
 import { connectToDB } from "../mongoose"
-import path from "path"
 
 interface Params {
   userId: string,
@@ -22,14 +22,14 @@ export async function fetchUser(userId: string) {
 
     return await User
       .findOne({ id: userId })
-    // .populate({
-    //   path: 'communities',
-    //   model: 'Community',
-    // })
+      .populate({
+        path: 'community',
+        model: Community,
+      })
 
   } catch (error) {
     console.error(error)
-    throw new Error(`Failed to fetch user: ${error}`)
+    return false
   }
 }
 
@@ -76,16 +76,16 @@ export async function fetchUserThreads(userId: string) {
         populate: [
           {
             path: 'community',
-            model: 'Community',
-            select: '_id id name image',
+            model: Community,
+            select: '_id id name image', // Select the "name" and "_id" fields from the "Community" model
           },
           {
             path: 'children',
-            model: 'Thread',
+            model: Thread,
             populate: {
               path: 'author',
               model: 'User',
-              select: '_id id name parentId image',
+              select: '_id id name parentId image', // Select the "name" and "_id" fields from the "User" model
             }
           }
         ]

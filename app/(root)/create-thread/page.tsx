@@ -9,11 +9,11 @@ export default async function Page() {
   const user = await currentUser()
   if (!user) redirect('/sign-in')
 
-  // const userInfo = await fetchUser(user.id)
+  const userInfo = await fetchUser(user.id)
 
-  // if(!userInfo || !userInfo.onboarded) {
-  //     redirect('/onboarding')
-  // }
+  if(!userInfo || !userInfo.onboarded) {
+    redirect('/onboarding')
+  }
   return (
     <>
       <h1 className="head-text">Create Thread</h1>
