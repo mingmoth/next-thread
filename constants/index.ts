@@ -26,7 +26,7 @@ export const sidebarLinks: { imgURL: string; route: string; label: string }[] = 
   },
   {
     imgURL: "/assets/user.svg",
-    route: "/profile",
+    route: "/profile/edit",
     label: "Profile",
   },
 ];

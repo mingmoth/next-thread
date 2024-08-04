@@ -30,7 +30,6 @@ import { updateUser } from "@/lib/actions/user.actions"
 interface Props {
   user: {
     id: string,
-    objectId: string,
     username: string,
     name: string,
     bio: string,
@@ -45,8 +44,8 @@ export default function AccountProfile({ user, btnTitle }: Props) {
     defaultValues: {
       profile_photo: user?.image || '',
       name: user?.name || '',
-      username: '',
-      bio: '',
+      username: user?.username ||'',
+      bio: user?.bio || '',
     }
   })
 

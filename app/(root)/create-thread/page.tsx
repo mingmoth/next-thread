@@ -11,7 +11,7 @@ export default async function Page() {
 
   const userInfo = await fetchUser(user.id)
 
-  if(!userInfo || !userInfo.onboarded) {
+  if(!userInfo || !userInfo?.onboarded) {
     redirect('/onboarding')
   }
   return (

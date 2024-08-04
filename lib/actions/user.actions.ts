@@ -1,6 +1,6 @@
 "use server"
 
-import { FilterQuery, SortOrder } from "mongoose"
+import { FilterQuery, ObjectId, SortOrder } from "mongoose"
 import { revalidatePath } from "next/cache"
 import Community from "../models/community.model";
 import Thread from "../models/thread.model";
@@ -16,16 +16,35 @@ interface Params {
   path: string
 }
 
+interface MongoUser {
+  _id: string,
+  id: string,
+  __v: number,
+  bio: string,
+  communities: [],
+  image: string,
+  name: string,
+  onboarded: boolean,
+  threads: [],
+  username: string
+}
+
 export async function fetchUser(userId: string) {
   try {
     connectToDB()
 
-    return await User
+    const userInfo: MongoUser | null = await User
       .findOne({ id: userId })
       .populate({
-        path: 'community',
+        path: 'communities',
         model: Community,
       })
+      .lean()
+
+    if(!userInfo) return false
+
+    const { _id, ...rest } = userInfo
+    return {...rest}
 
   } catch (error) {
     console.error(error)
