@@ -40,14 +40,13 @@ export default function PostThread({ userId }: Props) {
   async function onSubmit(values: z.infer<typeof ThreadValidation>) {
     try {
       await createThread({
-        id: `${userId}-${Date.now()}`,
         text: values.thread,
         author: userId,
         communityId: null,
         path: pathname,
       })
 
-      router.push('/')
+      router.push(`/profile/${userId}`)
     } catch (error) {
       alert(`Failed to post thread: ${error}`)
     }

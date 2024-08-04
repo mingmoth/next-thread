@@ -1,12 +1,12 @@
 "use server"
 
 import { connectToDB } from "../mongoose"
+import Community from "../models/community.model"
 import Thread from "../models/thread.model"
 import User from "../models/user.model"
 import { revalidatePath } from "next/cache"
 
 interface ThreadParams {
-  id: string,
   text: string,
   author: string,
   communityId: string | null,
@@ -14,7 +14,6 @@ interface ThreadParams {
 }
 
 export async function createThread({
-  id,
   text,
   author,
   communityId,
@@ -23,17 +22,28 @@ export async function createThread({
   try {
     connectToDB()
 
-    const createThread = await Thread.create({
-      id,
+    const communityIdObject = await Community.findOne(
+      { id: communityId },
+      { _id: 1 }
+    );
+
+    const createdThread = await Thread.create({
       text,
       author,
-      community: null,
-    })
+      community: communityIdObject, // Assign communityId if provided, or leave it null for personal account
+    });
 
     // Update User with new thread
     await User.findByIdAndUpdate(author, {
-      $push: { threads: createThread._id },
+      $push: { threads: createdThread._id },
     })
+
+    if (communityIdObject) {
+      // Update Community model
+      await Community.findByIdAndUpdate(communityIdObject, {
+        $push: { threads: createdThread._id },
+      });
+    }
 
     revalidatePath(path)
   } catch (error) {
@@ -94,14 +104,18 @@ export async function fetchThreadById(id: string) {
         select: "_id id name image",
       })
       .populate({
-        path: 'children',
+        path: 'children', // Populate the children field
         populate: [
-          { path: 'author', model: User, select: "_id id name parentId image" },
           {
-            path: 'children',
-            model: Thread,
+            path: 'author', // Populate the author field within children
+            model: User,
+            select: "_id id name parentId image"
+          },
+          {
+            path: 'children', // Populate the children field within children
+            model: Thread, // The model of the nested children (assuming it's the same "Thread" model)
             populate: {
-              path: 'author',
+              path: 'author', // Populate the author field within nested children
               model: User,
               select: "_id id name parentId image",
             }

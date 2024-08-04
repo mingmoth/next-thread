@@ -17,7 +17,7 @@ export default async function Thread({ params }: { params: { id: string } }) {
       name: 'User 1',
       image: 'https://i.pravatar.cc/300',
     },
-    createdAt: new Date(),
+    createdAt: '2022-01-01T00:00:00.000Z',
     children: [
       {
         id: '1-1',
@@ -28,7 +28,7 @@ export default async function Thread({ params }: { params: { id: string } }) {
           name: 'User 2',
           image: 'https://i.pravatar.cc/300',
         },
-        createdAt: new Date(),
+        createdAt: '2022-01-01T00:00:00.000Z',
         comments: [],
         community: null,
       },
@@ -41,7 +41,7 @@ export default async function Thread({ params }: { params: { id: string } }) {
           name: 'User 3',
           image: 'https://i.pravatar.cc/500',
         },
-        createdAt: new Date(),
+        createdAt: '2022-01-01T00:00:00.000Z',
         comments: [],
         community: null,
       },

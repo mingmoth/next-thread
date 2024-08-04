@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
 
 const threadSchema = new mongoose.Schema({
-  id: { type: String, required: true },
   text: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   parentId: { type: String },
