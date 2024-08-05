@@ -43,8 +43,7 @@ export async function fetchUser(userId: string) {
 
     if(!userInfo) return false
 
-    const { _id, ...rest } = userInfo
-    return {...rest}
+    return userInfo
 
   } catch (error) {
     console.error(error)
