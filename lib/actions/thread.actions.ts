@@ -169,3 +169,57 @@ export async function addCommentToThread(
     throw new Error("Unable to add comment");
   }
 }
+
+export async function likeThread(
+  userId: string,
+  threadId: string,
+) {
+  try {
+    connectToDB()
+    const thread = await Thread.findById(threadId);
+    if (!thread.likes.includes(userId)) {
+      thread.likes.push(userId);
+      await thread.save();
+    }
+
+    return true
+  } catch (error) {
+    return new Error(`Failed to like thread: ${error}`)
+  }
+}
+
+export async function shareThread(threadId: string) {
+  try {
+    connectToDB()
+
+    const thread = await Thread.findById(threadId);
+    thread.shares += 1;
+    await thread.save();
+
+    return true
+  } catch (error) {
+    return new Error(`Failed to share thread: ${error}`)
+  }
+}
+
+export async function repostThread(
+  userId: string,
+  originalThreadId: string,
+) {
+  try {
+    connectToDB()
+
+    const originalThread = await Thread.findById(originalThreadId)
+    const newThread = new Thread({
+      text: originalThread.text,
+      author: userId,
+      repostedFrom: originalThreadId,
+      community: originalThread.community,
+    });
+    await newThread.save()
+
+    return true
+  } catch (error) {
+    return new Error(`Failed to repost thread: ${error}`)
+  }
+}
