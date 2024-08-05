@@ -5,49 +5,16 @@ import { fetchUserThreads } from "@/lib/actions/user.actions";
 
 import ThreadCard from "../cards/ThreadCard";
 
-interface Author {
-  id: string,
-  name: string,
-  image: string,
-}
+import type { ThreadTabsResult } from "@/constants/types";
 
-interface Result {
-  name: string;
-  image: string;
-  id: string;
-  threads: {
-    _id: string;
-    text: string;
-    parentId: string | null;
-    author: {
-      name: string;
-      image: string;
-      id: string;
-    };
-    community: {
-      id: string;
-      name: string;
-      image: string;
-    } | null;
-    createdAt: string;
-    children: {
-      id: string
-  text: string
-  author: Author
-  parentId: string
-  createdAt: string,
-    }[];
-  }[];
-}
-
-interface Props {
+interface ThreadsTabsProps {
   currentUserId: string;
   accountId: string;
   accountType: string;
 }
 
-async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
-  let result: Result;
+async function ThreadsTab({ currentUserId, accountId, accountType }: ThreadsTabsProps) {
+  let result: ThreadTabsResult;
 
   result = {
     name: 'User 1',
@@ -102,7 +69,7 @@ async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
           id={thread._id}
           currentUserId={currentUserId}
           parentId={thread.parentId}
-          content={thread.text}
+          text={thread.text}
           author={
             accountType === "User"
               ? { name: result.name, image: result.image, id: result.id }

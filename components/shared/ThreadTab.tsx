@@ -2,33 +2,12 @@ import { redirect } from "next/navigation";
 import { fetchUserThreads } from "@/lib/actions/user.actions";
 import ThreadCard from "../cards/ThreadCard";
 
+import type { ThreadTabsResult } from "@/constants/types";
+
 interface ThreadTabProps {
   currentUserId: string,
   accountId: string,
   accountType: string,
-}
-
-interface Result {
-  name: string;
-  image: string;
-  id: string;
-  threads: {
-    _id: string;
-    text: string;
-    parentId: string | null;
-    author: {
-      name: string;
-      image: string;
-      id: string;
-    };
-    community: {
-      id: string;
-      name: string;
-      image: string;
-    } | null;
-    createdAt: Date;
-    children: [];
-  }[];
 }
 
 export default async function ThreadTab({
@@ -36,7 +15,7 @@ export default async function ThreadTab({
   accountId,
   accountType,
 }: ThreadTabProps) {
-  let result: Result | undefined
+  let result: ThreadTabsResult | undefined
 
   // result = await fetchUserThreads(accountId);
 
@@ -55,7 +34,7 @@ export default async function ThreadTab({
         id: '1',
       },
       community: null,
-      createdAt: new Date(),
+      createdAt: '2022-01-01T00:00:00.000Z',
       children: [],
     }],
   }
@@ -72,7 +51,7 @@ export default async function ThreadTab({
           id={thread._id}
           currentUserId={currentUserId}
           parentId={thread.parentId}
-          content={thread.text}
+          text={thread.text}
           author={
             accountType === "User"
               ? { name: result.name, image: result.image, id: result.id }

@@ -1,44 +1,14 @@
 import Image from "next/image"
 import Link from "next/link"
 
-interface Author {
-  id: string,
-  name: string,
-  image: string,
-}
-
-interface Community {
-  id: string,
-  name: string,
-  image: string,
-}
-
-interface Comment {
-  id: string
-  text: string
-  author: Author
-  parentId: string
-  createdAt: string,
-}
-
-interface ThreadProps {
-  id: string,
-  author: Author,
-  comments: Comment[] | [],
-  community: Community | null,
-  content: string,
-  createdAt: string,
-  currentUserId: string,
-  isComment?: boolean,
-  parentId: string | null,
-}
+import type { ThreadProps } from "@/constants/types";
 
 export default function ThreadCard({
   id,
   author,
   comments,
   community,
-  content,
+  text,
   createdAt,
   currentUserId,
   isComment,
@@ -58,7 +28,7 @@ export default function ThreadCard({
             <Link href={`/profile/${author.id}`} className="w-fit" >
               <h4 className="cursor-pointer text-base-semibold text-light-1">{author.name}</h4>
             </Link>
-            <p className="mt-2 text-small-regular text-light-2">{content}</p>
+            <p className="mt-2 text-small-regular text-light-2">{text}</p>
 
             <div className={`mt-5 ${isComment && 'mb-10'} flex flex-col gap-3`}>
               <div className="flex gap-3.5">
